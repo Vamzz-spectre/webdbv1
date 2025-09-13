@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vamx Database</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary: linear-gradient(135deg,#6366f1,#3b82f6);
+      --glass-bg: rgba(255,255,255,0.08);
+      --glass-border: rgba(255,255,255,0.3);
+    }
+    *{box-sizing:border-box;}
+    body {
+      font-family:'Outfit',sans-serif;
+      margin:0;
+      padding:20px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      background: radial-gradient(circle at top left,#0f172a,#1e293b);
+      color:white;
+    }
+    .container {
+      background:var(--glass-bg);
+      border:1px solid var(--glass-border);
+      backdrop-filter:blur(14px);
+      box-shadow:0 8px 40px rgba(0,0,0,0.5);
+      border-radius:18px;
+      padding:32px;
+      max-width:560px;
+      width:100%;
+      animation:fadeInUp 0.9s ease-out;
+    }
+    @keyframes fadeInUp {
+      from{opacity:0; transform:translateY(20px);}
+      to{opacity:1; transform:translateY(0);}
+    }
+    h1 {
+      text-align:center;
+      font-size:30px;
+      font-weight:700;
+      margin-bottom:24px;
+      background:var(--primary);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    form {
+      display:flex;
+      gap:10px;
+      margin-bottom:20px;
+    }
+    input[type="text"] {
+      flex:1;
+      padding:12px 14px;
+      font-size:15px;
+      border:none;
+      border-radius:12px;
+      background:rgba(255,255,255,0.15);
+      color:white;
+      outline:none;
+    }
+    input[type="text"]::placeholder {color:#cbd5e1;}
+    input[type="text"]:focus {
+      background:rgba(255,255,255,0.25);
+      box-shadow:0 0 0 2px #3b82f6;
+    }
+    button {
+      padding:12px 18px;
+      font-size:15px;
+      font-weight:600;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      background:var(--primary);
+      color:white;
+      transition:0.3s;
+    }
+    button:hover {
+      transform:scale(1.05);
+      box-shadow:0 6px 20px rgba(59,130,246,0.4);
+    }
+    .alert {
+      background:rgba(16,185,129,0.15);
+      border:1px solid rgba(16,185,129,0.4);
+      color:#6ee7b7;
+      padding:10px;
+      border-radius:8px;
+      margin-bottom:20px;
+      font-size:14px;
+      text-align:center;
+    }
+    .search-box {
+      position:relative;
+      margin-bottom:20px;
+    }
+    .search-box .search-icon {
+      position:absolute;
+      top:50%;
+      left:14px;
+      transform:translateY(-50%);
+      color:#9ca3af;
+      font-size:15px;
+    }
+    .search-box input {
+      width:100%;
+      padding:12px 12px 12px 40px;
+      font-size:14px;
+      border:none;
+      border-radius:12px;
+      background:rgba(255,255,255,0.15);
+      color:white;
+      outline:none;
+    }
+    .search-box input::placeholder {color:#cbd5e1;}
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:14px;
+      margin-bottom:15px;
+    }
+    th, td {
+      padding:12px;
+      text-align:center;
+    }
+    th {
+      background:rgba(255,255,255,0.1);
+      font-weight:600;
+      border-radius:10px;
+    }
+    tr {
+      transition:0.3s;
+    }
+    tr:hover {
+      background:rgba(255,255,255,0.08);
+    }
+    .footer {
+      margin-top:25px;
+      text-align:center;
+      font-size:13px;
+      color:#94a3b8;
+    }
+    .footer a {
+      color:#60a5fa;
+      text-decoration:none;
+      font-weight:500;
+    }
+    .footer a:hover {text-decoration:underline;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fas fa-database"></i> Vamx Database</h1>
+
+    <form action="/add" method="POST">
+      <input type="text" name="number" placeholder="Masukkan nomor" required />
+      <button type="submit"><i class="fas fa-plus"></i> Add</button>
+    </form>
+    
+    <% if (message) { %>
+      <div class="alert"><%= message %></div>
+    <% } %>
+
+    <div class="search-box">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" id="searchInput" placeholder="Cari nomor..." onkeyup="filterTable()" />
+    </div>
+
+    <table id="numberTable">
+      <tr>
+        <th>Daftar Semua Nomor</th>
+      </tr>
+      <% data.forEach(item => { %>
+        <tr>
+          <td><%= item %></td>
+        </tr>
+      <% }) %>
+    </table>
+
+    <div class="footer">
+      <a href="https://wa.me/6285624297893" target="_blank">[ Contact Developer ]</a>
+    </div>
+  </div>
+
+  <script>
+    function filterTable() {
+      const input = document.getElementById("searchInput");
+      const filter = input.value.toLowerCase();
+      const table = document.getElementById("numberTable");
+      const tr = table.getElementsByTagName("tr");
+
+      for (let i = 1; i < tr.length; i++) {
+        const td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          const txtValue = td.textContent || td.innerText;
+          tr[i].style.display = txtValue.toLowerCase().includes(filter) ? "" : "none";
+        }
+      }
+    }
+    window.addEventListener("DOMContentLoaded", () => {
+      const alertEl = document.querySelector(".alert");
+      if (alertEl) {
+        setTimeout(() => {
+          alertEl.style.transition = "opacity 0.5s ease-out";
+          alertEl.style.opacity = "0";
+          setTimeout(() => alertEl.remove(), 500);
+        }, 5000);
+      }
+    });
+  </script>
+</body>
+</html>
